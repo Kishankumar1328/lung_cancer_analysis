@@ -9,7 +9,7 @@
 
 **🔬 AI-Powered Health Assessment Tool for Early Risk Detection**
 
-[🚀 Live Demo](#-live-demo) • [📖 Documentation](#-documentation) • [🛠️ Installation](#️-installation) • [🤝 Contributing](#-contributing)
+
 
 </div>
 
