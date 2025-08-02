@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lung Cancer Risk Predictor</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-light: #f8fafc;
+            --text-dark: #1e293b;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(37, 99, 235, 0.5);
+            }
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .form-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-label i {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            pointer-events: none;
+        }
+
+        .form-input:focus + .input-icon {
+            color: var(--accent-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            animation: slideInUp 0.6s ease-out 0.5s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1.5rem 0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .loading-text {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            animation: resultSlideIn 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        @keyframes resultSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .result.positive {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .result.negative {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .result i {
+            font-size: 1.5rem;
+        }
+
+        .disclaimer {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .disclaimer i {
+            color: var(--warning-color);
+            font-size: 1.1rem;
+            margin-top: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.75rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .header-icon {
+                width: 70px;
+                height: 70px;
+            }
+
+            .header-icon i {
+                font-size: 2rem;
+            }
+
+            .form-input {
+                padding: 0.875rem 0.875rem 0.875rem 2.75rem;
+                font-size: 0.95rem;
+            }
+
+            .submit-btn {
+                padding: 1.125rem;
+                font-size: 1rem;
+            }
+
+            .disclaimer {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                max-width: 100%;
+            }
+
+            .card {
+                padding: 1.25rem;
+                margin: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-group {
+                margin-bottom: 1.25rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                max-width: 32rem;
+            }
+
+            .card {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .card:hover {
+                transform: translateY(-12px);
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --glass-bg: rgba(255, 255, 255, 0.08);
+                --glass-border: rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .form-input {
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+            
+            .form-input:focus {
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="card">
+            <div class="header">
+                <div class="header-icon">
+                    <i class='bx bxs-heart-circle'></i>
+                </div>
+                <h1>Lung Health Assessment</h1>
+                <p>AI-powered risk evaluation system</p>
+            </div>
+
+            <form method="POST" id="predictionForm" class="form-container">
+                <div class="form-group">
+                    <label class="form-label" for="age">
+                        <i class='bx bx-calendar'></i>
+                        Age
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="age" 
+                            name="age" 
+                            class="form-input"
+                            placeholder="Enter your age (1-120)" 
+                            required 
+                            min="1" 
+                            max="120"
+                            autocomplete="age"
+                        >
+                        <i class='bx bx-user input-icon'></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="smokes">
+                        <i class='bx bx-no-smoking'></i>
+                        Smoking Status
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="smokes" 
+                            name="smokes" 
+                            class="form-input"
+                            placeholder="0 = Non-smoker, 1 = Smoker" 
+                            required 
+                            min="0" 
+                            max="1"
+                        >
+                        <i class='bx bx-smoke input-icon'></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="areaq">
+                        <i class='bx bx-wind'></i>
+                        Air Quality
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="areaq" 
+                            name="areaq" 
+                            class="form-input"
+                            placeholder="Scale 1-10 (1=Poor, 10=Excellent)" 
+                            required 
+                            min="1" 
+                            max="10"
+                        >
+                        <i class='bx bx-cloud input-icon'></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="alkhol">
+                        <i class='bx bx-drink'></i>
+                        Alcohol Consumption
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="alkhol" 
+                            name="alkhol" 
+                            class="form-input"
+                            placeholder="0 = No, 1 = Yes" 
+                            required 
+                            min="0" 
+                            max="1"
+                        >
+                        <i class='bx bx-beer input-icon'></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class='bx bx-analyze'></i>
+                    Analyze Risk
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Analyzing your health data...</div>
+            </div>
+
+            {% if result %}
+            <div class="result {{ 'positive' if 'Positive' in result else 'negative' }}">
+                {% if 'Positive' in result %}
+                    <i class='bx bx-error-circle'></i>
+                {% else %}
+                    <i class='bx bx-check-circle'></i>
+                {% endif %}
+                {{ result }}
+            </div>
+            {% endif %}
+
+            <div class="disclaimer">
+                <i class='bx bx-info-circle'></i>
+                <div>
+                    <strong>Medical Disclaimer:</strong> This AI assessment is for informational purposes only and should not replace professional medical consultation. Please consult qualified healthcare providers for accurate diagnosis and treatment recommendations.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission with loading state
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            const loadingElement = document.getElementById('loading');
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            loadingElement.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Processing...';
+            
+            // Re-enable form after 10 seconds in case of issues
+            setTimeout(() => {
+                loadingElement.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bx bx-analyze"></i> Analyze Risk';
+            }, 10000);
+        });
+
+        // Enhanced input interactions
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+
+            // Real-time validation feedback
+            input.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                const min = parseInt(this.getAttribute('min'));
+                const max = parseInt(this.getAttribute('max'));
+                
+                if (value >= min && value <= max) {
+                    this.style.borderColor = 'var(--success-color)';
+                } else if (this.value && (value < min || value > max)) {
+                    this.style.borderColor = 'var(--danger-color)';
+                } else {
+                    this.style.borderColor = 'transparent';
+                }
+            });
+        });
+
+        // Keyboard navigation enhancement
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('form-input')) {
+                const inputs = Array.from(document.querySelectorAll('.form-input'));
+                const currentIndex = inputs.indexOf(e.target);
+                const nextInput = inputs[currentIndex + 1];
+                
+                if (nextInput) {
+                    nextInput.focus();
+                } else {
+                    document.querySelector('.submit-btn').focus();
+                }
+            }
+        });
+
+        // Touch device optimizations
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+            
+            // Prevent zoom on input focus for iOS
+            const viewport = document.querySelector('meta[name="viewport"]');
+            viewport.setAttribute('content', viewport.content + ', user-scalable=no');
+        }
+
+        // Performance optimization: Intersection Observer for animations
+        if ('IntersectionObserver' in window) {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.form-group').forEach(group => {
+                observer.observe(group);
+            });
+        }
+    </script>
+</body>
+</html>
